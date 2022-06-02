@@ -79,9 +79,9 @@ while connected:
         send_message(f"The user {username} has disconnected!")
         connected = False
     elif str.split(message)[0] == SEND_FILE_COMMAND:
-        #try:
-        send_file(str.split(message)[1])
-        #except:
-        #    print("Hubo en error al cargar el archivo. Recuerda que para usar este comando: /file ruta_del_archivo")
+        try:
+            send_file(str.split(message)[1])
+        except:
+            print("Hubo en error al cargar el archivo. Recuerda que para usar este comando: /file ruta_del_archivo")
     else:
         send_message(message)

@@ -4,7 +4,7 @@ from tkinter import ttk
 import tkinter
 from tkinter import filedialog
 
-import cliente
+import clienteG
 
 #def loadWindow():
 root = Tk()
@@ -33,13 +33,13 @@ def openFile(url_file):
 
 def loadMss(widget):
     while(True):
-        if(cliente.LOAD):
+        if(clienteG.LOAD):
             widget.configure(state="normal")
-            for text in cliente.MSS:
+            for text in clienteG.MSS:
                 widget.insert(tkinter.END, (text+"\n"))
             widget.configure(state="disable")
             widget.update()
-            cliente.LOAD = False
+            clienteG.LOAD = False
 
 ######
 
@@ -53,7 +53,7 @@ cuadro_texto.grid(column=0, row=1, sticky="w", pady=10)
 sb.grid(column=1, row=1, sticky="wns") 
 sb.config(command=cuadro_texto.yview)
 
-chat = ttk.Entry(frm, width=55)
+chat = ttk.Entry(frm, width=55, state="disable")
 chat.grid(column=0, row=3, sticky="sw")
 
 
@@ -67,7 +67,7 @@ botonFile = ttk.Button(frm, text="Subir archivo", command=lambda:openFile(url_fi
 botonFile.grid(column=5, row=1, sticky="n")
 
 if(loadOnce):
-    receiving_thread = threading.Thread(target=cliente.runClient)
+    receiving_thread = threading.Thread(target=clienteG.runClient)
     receiving_thread.start()
 
     thread_box = threading.Thread(target=loadMss, args=[cuadro_texto])

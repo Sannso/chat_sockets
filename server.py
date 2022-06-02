@@ -3,6 +3,7 @@ import socket
 
 # constants
 DISCONNECT_COMMAND = '/disconnect'
+SEND_FILE_COMMAND = '/file'
 HEADER_LENGTH = 10
 FORMAT = 'utf-8'
 IP = '127.0.1.1'
@@ -28,26 +29,27 @@ def close_connection(client_socket):
 def send_message(socket, message):
     try:
         socket.send(bytes(f"{len(message):<{HEADER_LENGTH}}", FORMAT))
-        socket.send(bytes(message, FORMAT))
+        if type(message) == bytes:
+            socket.send(message)
+        else:
+            socket.send(bytes(message, FORMAT))
     except:
         print(f"[ERROR] SENDING '{message}' to {clients[socket]['username']}")
 
-def send_file(socket, file):
-    try:
-        data = open(file, "rb")
-        socket.send(bytes(f"{len(data):<{HEADER_LENGTH}}", FORMAT))
-        socket.send(data)
-    except:
-        print(f"[ERROR] SENDING FILE '{file}' to {clients[socket]['username']}")
-
-def receive_message(client_socket):
+def receive_message(client_socket, decode = True):
     while True:
         message_length = client_socket.recv(HEADER_LENGTH).decode(FORMAT)
-        message = client_socket.recv(int(message_length)).decode(FORMAT)
+        if decode:
+            message = client_socket.recv(int(message_length)).decode(FORMAT)
+        else:
+            message = client_socket.recv(int(message_length))
         return message
 
-def send_to_all_clients(message, sender_socket):
-    user_message = f"{clients[sender_socket]['username']} > {message}"
+def send_to_all_clients(message, sender_socket, show_user = True):
+    if show_user:
+        user_message = f"{clients[sender_socket]['username']} > {message}"
+    else:
+        user_message = message
     messages.append((clients[sender_socket]['username'], message))
     print(user_message)
     for client_socket in clients:
@@ -72,8 +74,16 @@ def handle_client(client_socket, client_address):
     while connected:
         try:
             message = receive_message(client_socket)
+
             if message == DISCONNECT_COMMAND:
                 connected = False
+            elif message == SEND_FILE_COMMAND:
+                send_to_all_clients(SEND_FILE_COMMAND, client_socket, show_user=False)
+                filename = receive_message(client_socket)
+                data = receive_message(client_socket, decode=False)
+                send_to_all_clients(filename, client_socket, show_user=False)
+                send_to_all_clients(data, client_socket, show_user=False)
+                continue
 
             send_to_all_clients(message, client_socket)
 

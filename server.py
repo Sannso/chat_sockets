@@ -48,10 +48,13 @@ def receive_message(client_socket, decode = True):
 def send_to_all_clients(message, sender_socket, show_user = True):
     if show_user:
         user_message = f"{clients[sender_socket]['username']} > {message}"
+        messages.append((clients[sender_socket]['username'], message))
+        print(user_message)
     else:
         user_message = message
-    messages.append((clients[sender_socket]['username'], message))
-    print(user_message)
+        messages.append(f"The user {clients[sender_socket]['username']} sent a file.")
+        print(f"[SERVER] The user {clients[sender_socket]['username']} sent a file.")
+        
     for client_socket in clients:
         if sender_socket != client_socket:
             send_message(client_socket, user_message)

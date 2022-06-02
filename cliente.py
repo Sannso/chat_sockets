@@ -29,7 +29,7 @@ def receive_file(filename, data):
     file = open(filename, "wb")
     file.write(data)
     file.close()
-    print("El archivo fue guardado en la misma carpeta del programa.")
+    print("The file was saved in the folder where the program is located.")
 
 def receive_message(decode = True):
     while True:
@@ -57,7 +57,7 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect(SERVER_ADDRESS)
 
 # Username Prompt
-username = input("Enter your username:\n")
+username = input("Enter your username: ")
 send_message(username)
 
 # Server Message for successful connection, and previous messages in server
@@ -74,14 +74,14 @@ receiving_thread.start()
 # messaging in the server
 connected = True
 while connected:
-    message = input(f"<Me> ")
+    message = input()
     if message == DISCONNECT_COMMAND:
-        send_message(f"The user {username} has disconnected!")
+        send_message(f"The user has disconnected!")
         connected = False
     elif str.split(message)[0] == SEND_FILE_COMMAND:
         try:
             send_file(str.split(message)[1])
         except:
-            print("Hubo en error al cargar el archivo. Recuerda que para usar este comando: /file ruta_del_archivo")
+            print("[SERVER] There is a problem loading the file. Remember: /file route_of_file")
     else:
         send_message(message)
